@@ -1,0 +1,29 @@
+Butterfly fun fact website with the challenge description describing a hidden communication within the website.
+
+Checking sources, there was a script being implemented from the cryptoJS library, although I couldn't quite find out on what it was being used.
+Other than that there was nothing else suspicious within the sources.
+Checking the other dev tools of the website showed that IndexedDB was being used as well as the session and local storage of the website.
+
+The local storage contained the necessary code for decrypting the encoded string that one was supposed to find:
+"CryptoJS.AES.decrypt(CIPHERTEXT, KEY).toString(CryptoJS.enc.Utf8)"
+
+The session storage contained the passphrase key used by the AES encryption:
+"secret key is very secure"
+
+And the indexedDB entry containing an object named FLAG, depicting an 88 character string that looked like a hash (you had to put this one together manually):
+"U2FsdGVkX19wWL7itIL7TZcLTP/e1ulrZolI9AHTA8OBGOCodbZKdOxPF41rGV9C+X7PZPt9ISJKQMPTl+Fwew=="
+
+Putting this all together into an online node.js compiler with the code being: 
+var CryptoJS = require("crypto-js");
+
+console.log(
+  CryptoJS.AES.decrypt(
+    "U2FsdGVkX19wWL7itIL7TZcLTP/e1ulrZolI9AHTA8OBGOCodbZKdOxPF41rGV9C+X7PZPt9ISJKQMPTl+Fwew==",
+    "secret key is very secure"
+  ).toString(CryptoJS.enc.Utf8)
+);
+
+The output would be: 
+TBTL{th15_1S_n0
+
+which is in fact only half the flag. The other half I have yet to find
