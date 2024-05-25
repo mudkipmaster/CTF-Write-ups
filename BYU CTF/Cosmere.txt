@@ -1,0 +1,9 @@
+Just reversing a website
+
+https://www.brandonsanderson.com/official-knights-radiant-order-quiz/
+
+the question was to find the optimal percentage for the Dustbringer class on the scale of Free-spirited to Disciplined.
+
+Searching through the sources and filtering for Dustbringer revealed the file, and there was an amount of arrays describing the optimal percentage for each class depending on what trait slider they corresponded to.
+Position 3 was the position of the Dustbringer and looking at the trait slider that we wanted (15b)(the b was on the scale of dsiciplined)
+That number was the flag. 

@@ -1,0 +1,5 @@
+The ELF file 'hidden' was given
+
+Using Ghidra, we found a few functions, and after some analyzing we found a function that seems to mimic a string append.
+The key one was the Flag forming function, and after renaming a few functions for key functionality, and with help from AI, we got the flag.
+FLAG: L3AK{b4by_sT3Ps}
