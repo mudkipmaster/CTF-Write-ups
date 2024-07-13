@@ -1,0 +1,12 @@
+Reverse Image Search of the guitar gives the result of the Hard Rock Cafe in Valletta Malta.
+Website has the local menu as a pdf.
+Searching the pdf properties gives:  
+
+
+Creation Date: 7/25/2022, 4:53:11 AM
+Modification Date: 7/25/2022, 4:54:11 AM
+Creator: Adobe InDesign CS6 (Windows) 
+PDF Producer: Adobe PDF Library 10.0.1 
+
+tried: 
+- N0PS{Adobe InDesign CS6 (Windows)}

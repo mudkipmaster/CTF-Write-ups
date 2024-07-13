@@ -1,0 +1,10 @@
+Given string of:
+
+hsggna0stiaeaetteyc4ehvdatyporwtyseefregrstaf_etposruouoy{qnirroiybrbs5edmothssavetc8hebhwuibihh72eyaoepmlvoet9lobulpkyenf4xpulsloinmelllisyassnousa31mebneedtctg_}eeedeboghbihpatesyyfolus1lnhnooeliotb5ebidfueonnactayseyl
+
+
+and the hint that it is an ancient ciphertext using a cylinder, the jefferson cipher gets ruled out and the scytale cipher comes to mind/
+
+Using a website to decrypt the given string with this cipher we get:
+heyguysimkindoflostprobablynotgoingtosurvivemuchlongertobehonestbutanywaystheflagisbcactf{5c7t4l3_h15t04y_qe829xl1}pleasesendhelpimeanbythetimeyouseethisiveprobablybeendeadforthousandsofyearsohwellseeyoulaterisupposebyee_
+bcactf{5c7t4l3_h15t04y_qe829xl1}

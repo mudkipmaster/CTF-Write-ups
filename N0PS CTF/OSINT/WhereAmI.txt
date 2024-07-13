@@ -1,0 +1,4 @@
+Google reverse search brings up Lisbon as a place.
+Lisbon Commerce square is a possible answer
+Praça do Comércio
+N0PS{praca-do-comercio} after a little bit of trial and error.
