@@ -1,0 +1,63 @@
+Linux challenge in MISC
+read only file system where you have to find the process running on tcp port 9876
+so we need to navigate to proc/net/tcp and cat it
+then we need to find the port hex equivalent of 9876 which is 2694
+the line looks like this:
+
+0100007F:2694 00000000:0000 0A 00000000:00000002 00:00000000 00000000     0        0 1500842 3 0000000000000000 100 0 0 10 0   
+
+INODE = 1500842 
+
+this is important to find the PID
+
+we use this command off stack overflow:
+
+ls -l /proc/*/task/*/fd/* | grep socket:.$INODE
+
+replaceing $INODE with the number we found
+
+RESULT:
+
+$ ls -l /proc/*/task/*/fd/* | grep socket:.1500842            
+ls: cannot access '/proc/23019/task/23019/fd/10': No such file or directory
+ls: cannot access '/proc/23019/task/23019/fd/3': No such file or directory
+ls: cannot access '/proc/23019/task/23019/fd/4': No such file or directory
+ls: cannot access '/proc/23019/task/23019/fd/5': No such file or directory
+ls: cannot access '/proc/self/task/23019/fd/10': No such file or directory
+ls: cannot access '/proc/self/task/23019/fd/3': No such file or directory
+ls: cannot access '/proc/self/task/23019/fd/4': No such file or directory
+ls: cannot access '/proc/self/task/23019/fd/5': No such file or directory
+
+trying something else
+
+ls -l /proc/*/fd/* | grep socket:.1500842
+lsof -i | awk -v sock=1500842 '$6 == sock{print $2}'
+
+
+ls -l /proc/*/fd/* | grep socket:.1500842
+it seems this one is working but the process changes PID too fast for me to tell so: 
+Im goint to pipe more commands into it to cat the mount info
+
+cat /proc/*/comm | grep socket:.1500842
+cd /proc/ | grep socket:.1500842
+cat /proc/*/* | grep socket:1500842
+
+well we found its name ish 
+using 
+ps -p 102 -o cmd,args,pid,ppid,user,stat
+
+Now we check for its actual name 
+
+grep -r "7a2ec06e1d3cc25f706f86cc313b1239.py" /*
+
+7a2ec06e1d3cc25f706f86cc313b1239.py is not the right name, but probably the right unique identifier
+
+root         102       1  3 01:00 ?        00:11:05 python3 /scripts/7a2ec06e1d3cc25f706f86cc313b1239.py
+
+-------------------------------
+
+Day 2
+
+rechecking socket INODE = 3490694
+
+its still PID 102

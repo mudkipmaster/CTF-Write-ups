@@ -1,0 +1,5 @@
+Your coworker posted this photo of their room at a ranch they are currently vacationing at. Can you figure out the name of the ranch?
+
+The metadata in the image gave away the GPS coordinates for Big River Ranch near Kansas City
+
+metaCTF{Big_River_Ranch}

@@ -1,0 +1,1 @@
+Given the elf file called "unoriginal" and utilizing ghidra to analyze, 

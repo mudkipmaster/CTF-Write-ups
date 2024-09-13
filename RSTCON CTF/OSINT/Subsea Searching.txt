@@ -1,0 +1,7 @@
+A Google cable lands here. What town does the other end of the cable land in?
+
+The manhole cover next to the fiber optic cable has the letter vbda-comm which with a quick google search gives us
+https://techcrunch.com/2021/02/03/googles-new-subsea-cable-between-the-u-s-and-europe-is-now-online/
+which tells us that the cable ends up at Saint-Hilaire-de-Riez in France (subsea does make it kinda obvious)
+
+The FLAG was just the town name, no flag formatting
